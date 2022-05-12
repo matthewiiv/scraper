@@ -95,7 +95,7 @@ async function getListings(
       const { assets, next } = response.data;
       if (assets) {
         aggregatedAssets = [...aggregatedAssets, ...assets];
-        if (!next || count === 10) {
+        if (!next) {
           return aggregatedAssets
             .map((asset) => ({
               ...asset,
