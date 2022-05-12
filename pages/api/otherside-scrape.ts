@@ -95,7 +95,7 @@ async function getListings(
       const { assets, next } = response.data;
       if (assets) {
         aggregatedAssets = [...aggregatedAssets, ...assets];
-        if (!next || count === 50) {
+        if (!next || count === 10) {
           return aggregatedAssets
             .map((asset) => ({
               ...asset,
@@ -183,43 +183,47 @@ export default async function handler(
   );
   try {
     await mongoClient.connect();
-    await mongoClient
-      .db()
-      .collection("opensea-collections")
-      .updateOne({ collection_slug: "mutant-ape-yacht-club" }, mutantStats);
-    await mongoClient
-      .db()
-      .collection("opensea-collections")
-      .updateOne({ collection_slug: "boredapeyachtclub" }, apeStats);
+    await mongoClient.db().collection("opensea-collections").updateOne(
+      { collection_slug: "mutant-ape-yacht-club" },
+      { $set: mutantStats },
+      {
+        upsert: true,
+      }
+    );
+    await mongoClient.db().collection("opensea-collections").updateOne(
+      { collection_slug: "boredapeyachtclub" },
+      { $set: apeStats },
+      {
+        upsert: true,
+      }
+    );
     if (mutantsNotClaimed) {
       await mongoClient
         .db()
         .collection("opensea-assets")
         .updateOne(
           { collection_slug: "mutant-ape-yacht-club" },
-          mutantsNotClaimed
+          { $set: { listed_assets: mutantsNotClaimed } },
+          { upsert: true }
         );
     }
     if (apesNotClaimed) {
       await mongoClient
         .db()
         .collection("opensea-assets")
-        .updateOne({ collection_slug: "boredapeyachtclub" }, apesNotClaimed);
+        .updateOne(
+          { collection_slug: "boredapeyachtclub" },
+          { $set: { listed_assets: apesNotClaimed } },
+          {
+            upsert: true,
+          }
+        );
     }
 
     await mongoClient.close();
     res.status(200).end();
   } catch (e) {
-    console.log(e);
     await mongoClient.close();
     res.status(500);
   }
-  // Poll api to update listings
-  // Check claimed status for each token
-  // Save to Mongo
-  // Stream to FE
-
-  res
-    .status(200)
-    .json({ mutantStats, mutantsNotClaimed, apeStats, apesNotClaimed });
 }
