@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "build-jobs": "tsc jobs/*.ts"
   },
   "dependencies": {
     "@ethersproject/providers": "^5.6.4",
