@@ -1,35 +1,24 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import useSWR from "swr";
 import {
   AssetWithClaimData,
   OpenseaCollectionStats,
 } from "./api/otherside-scrape";
 
+const fetchJSON = (url: string) => fetch(url).then((res) => res.json());
+
 const Home: NextPage = () => {
-  const [mutantStats, setMutantStats] = useState<OpenseaCollectionStats>();
-  const [mutants, setMutants] = useState<AssetWithClaimData[]>();
-  const [apeStats, setApeStats] = useState<OpenseaCollectionStats>();
-  const [apes, setApes] = useState<AssetWithClaimData[]>();
-  useEffect(() => {
-    async function getData() {
-      const response = await fetch("/api/otherside-scrape");
-      const { mutantStats, mutantsNotClaimed, apeStats, apesNotClaimed } =
-        (await response.json()) as {
-          mutantStats: OpenseaCollectionStats;
-          mutantsNotClaimed: AssetWithClaimData[];
-          apeStats: OpenseaCollectionStats;
-          apesNotClaimed: AssetWithClaimData[];
-        };
-      setMutantStats(mutantStats);
-      setMutants(mutantsNotClaimed);
-      setApeStats(apeStats);
-      setApes(apesNotClaimed);
-      console.log(mutantsNotClaimed);
-    }
-    getData();
-  }, []);
+  const { data, error } = useSWR<{
+    mutantCollection: OpenseaCollectionStats | null;
+    boredApeCollection: OpenseaCollectionStats | null;
+    mutantsNotClaimed: AssetWithClaimData[] | null;
+    boredApesNotClaimed: AssetWithClaimData[] | null;
+  }>("/api/otherside-data", fetchJSON);
+  if (error) return <div>failed to load</div>;
+  if (!data) return <div>loading...</div>;
+  console.log(data);
 
   return (
     <div>
@@ -42,7 +31,7 @@ const Home: NextPage = () => {
       <main>
         <div className="flex">
           <div>
-            {mutants?.map((m) => (
+            {data.mutantsNotClaimed?.map((m) => (
               <div key={m.token_id}>
                 <div className="relative">
                   <Image
@@ -52,10 +41,11 @@ const Home: NextPage = () => {
                     height={150}
                   />
                 </div>
-                <p>Floor {mutantStats?.floor_price}</p>
+                <p>Floor {data.mutantCollection?.floor_price}</p>
                 <p>Price {m.price}</p>
                 <p>
-                  Difference {(m.price || 0) - (mutantStats?.floor_price || 0)}
+                  Difference{" "}
+                  {(m.price || 0) - (data.mutantCollection?.floor_price || 0)}
                 </p>
                 <a href={m.permalink} target="_blank" rel="noreferrer">
                   Link
@@ -64,7 +54,7 @@ const Home: NextPage = () => {
             ))}
           </div>{" "}
           <div>
-            {apes?.map((a) => (
+            {data.boredApesNotClaimed?.map((a) => (
               <div key={a.token_id}>
                 <div className="relative">
                   <Image
@@ -74,10 +64,11 @@ const Home: NextPage = () => {
                     height={150}
                   />
                 </div>
-                <p>Floor {apeStats?.floor_price}</p>
+                <p>Floor {data.boredApeCollection?.floor_price}</p>
                 <p>Price {a.price}</p>
                 <p>
-                  Difference {(a.price || 0) - (apeStats?.floor_price || 0)}
+                  Difference{" "}
+                  {(a.price || 0) - (data.boredApeCollection?.floor_price || 0)}
                 </p>
                 <a href={a.permalink} target="_blank" rel="noreferrer">
                   Link
