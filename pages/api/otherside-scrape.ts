@@ -3,6 +3,7 @@ import { AlchemyProvider } from "@ethersproject/providers";
 import axios from "axios";
 import rateLimit from "axios-rate-limit";
 import { ethers } from "ethers";
+import { MongoClient } from "mongodb";
 import type { NextApiRequest, NextApiResponse } from "next";
 import getAbi from "../../src/etherscan/get-abi";
 
@@ -176,6 +177,43 @@ export default async function handler(
   const apesNotClaimed = apes
     ? await updateClaimedStatus(apes, "alphaClaimed")
     : null;
+
+  const mongoClient = new MongoClient(
+    `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.ulnom.mongodb.net/${process.env.MONGO_ORGANISATION}?retryWrites=true&w=majority`
+  );
+  try {
+    await mongoClient.connect();
+    await mongoClient
+      .db()
+      .collection("opensea-collections")
+      .updateOne({ collection_slug: "mutant-ape-yacht-club" }, mutantStats);
+    await mongoClient
+      .db()
+      .collection("opensea-collections")
+      .updateOne({ collection_slug: "boredapeyachtclub" }, apeStats);
+    if (mutantsNotClaimed) {
+      await mongoClient
+        .db()
+        .collection("opensea-assets")
+        .updateOne(
+          { collection_slug: "mutant-ape-yacht-club" },
+          mutantsNotClaimed
+        );
+    }
+    if (apesNotClaimed) {
+      await mongoClient
+        .db()
+        .collection("opensea-assets")
+        .updateOne({ collection_slug: "boredapeyachtclub" }, apesNotClaimed);
+    }
+
+    await mongoClient.close();
+    res.status(200).end();
+  } catch (e) {
+    console.log(e);
+    await mongoClient.close();
+    res.status(500);
+  }
   // Poll api to update listings
   // Check claimed status for each token
   // Save to Mongo
