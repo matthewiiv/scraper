@@ -1,12 +1,12 @@
-name: Hourly cron job
+name: Updated collections
 on:
   schedule:
-    - cron: "*/5 * * * *"
+    - cron: "*/10 * * * *"
 jobs:
   cron:
     runs-on: ubuntu-latest
     steps:
-      - name: Hourly cron job
+      - name: Updated collections
         run: |
           curl --request GET \
           --url 'https://scraper-six.vercel.app/api/otherside-scrape'
