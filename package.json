@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "build-jobs": "tsc jobs/*.ts"
+    "build-jobs": "tsc jobs/*.ts",
+    "run-scrape-opensea-collections": "node jobs/scrape.js"
   },
   "dependencies": {
     "@ethersproject/providers": "^5.6.4",
