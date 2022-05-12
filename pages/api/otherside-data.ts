@@ -13,18 +13,22 @@ export default async function handler(
   );
   try {
     await mongoClient.connect();
+    console.log("Fetching mutant collection");
     const mutantCollection = await mongoClient
       .db()
       .collection("opensea-collections")
       .findOne({ collection_slug: "mutant-ape-yacht-club" });
+    console.log("Fetching ape collection");
     const boredApeCollection = await mongoClient
       .db()
       .collection("opensea-collections")
       .findOne({ collection_slug: "boredapeyachtclub" });
+    console.log("Fetching mutant data");
     const mutantsNotClaimed = await mongoClient
       .db()
       .collection("opensea-assets")
       .findOne({ collection_slug: "mutant-ape-yacht-club" });
+    console.log("Fetching ape data");
     const boredApesNotClaimed = await mongoClient
       .db()
       .collection("opensea-assets")
