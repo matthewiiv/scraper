@@ -1,12 +1,15 @@
-name: Updated collections
+# .github/workflows/scheduled-builds.yml
+name: Trigger Site Rebuild on a CRON Schedule
+
 on:
   schedule:
-    - cron: "* * * * *"
+    # Runs "at minute 55 past every hour" (see https://crontab.guru)
+    - cron: "29 * * * *"
 jobs:
-  cron:
+  build:
+    name: Trigger Site Rebuild
     runs-on: ubuntu-latest
     steps:
-      - name: Updated collections
-        run: |
-          curl --request GET \
-          --url 'https://scraper-six.vercel.app/api/otherside-scrape'
+      - name: cURL request
+        # Hit the webhook endpoint to rebuild  from the "main" branch
+        run: curl -X GET https://scraper-six.vercel.app/api/otherside-scrape
