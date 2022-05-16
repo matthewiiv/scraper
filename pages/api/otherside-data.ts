@@ -19,6 +19,7 @@ export default async function handler(
       .db()
       .collection("opensea-collections")
       .findOne({ collection_slug: "mutant-ape-yacht-club" });
+    console.log(mutantCollection);
     console.log("Fetching ape collection");
     const boredApeCollection = await mongoClient
       .db()
