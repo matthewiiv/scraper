@@ -179,7 +179,7 @@ export default async function handler(
     : null;
 
   const mongoClient = new MongoClient(
-    `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.ulnom.mongodb.net/${process.env.MONGO_ORGANISATION}?retryWrites=true&w=majority`
+    `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.ulnom.mongodb.net/${process.env.MONGO_DATABASE}?retryWrites=true&w=majority`
   );
   try {
     await mongoClient.connect();
