@@ -4,7 +4,15 @@ module.exports = {
     "./components/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        sans: ["Work Sans"],
+        title: ["Major Mono Display"],
+        special: ["Special Elite"],
+        audiowide: ["Audiowide"],
+        header: ["Bungee"],
+      },
+    },
   },
   plugins: [],
 };

@@ -24,6 +24,11 @@ export default async function handler(
       .db()
       .collection("opensea-collections")
       .findOne({ collection_slug: "boredapeyachtclub" });
+    console.log("Fetching otherdeed collection");
+    const otherdeedCollection = await mongoClient
+      .db()
+      .collection("opensea-collections")
+      .findOne({ collection_slug: "otherdeed" });
     console.log("Fetching mutant data");
     const mutantsNotClaimed = await mongoClient
       .db()
@@ -39,6 +44,7 @@ export default async function handler(
     res.status(200).json({
       mutantCollection,
       boredApeCollection,
+      otherdeedCollection,
       mutantsNotClaimed: mutantsNotClaimed?.listed_assets,
       boredApesNotClaimed: boredApesNotClaimed?.listed_assets,
     });

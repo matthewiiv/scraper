@@ -1,11 +1,13 @@
 import type { NextPage } from "next";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { useEffect } from "react";
 
 const Home: NextPage = () => {
+  const router = useRouter();
   useEffect(() => {
-    fetch("/api/ape-scrape");
-  }, []);
+    router.push("/otherdeed");
+  }, [router]);
 
   return (
     <div>
@@ -15,9 +17,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main>
-        <h1 className="text-3xl font-bold underline">Hello world!</h1>
-      </main>
+      <main className="bg-gray-900"></main>
     </div>
   );
 };
